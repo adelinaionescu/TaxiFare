@@ -1,0 +1,15 @@
+artifact_uri: file:///home/adelina/code/adelinaionescu/TaxiFareModel/mlruns/1/4c849b47220243e2aceea57b1cd11060/artifacts
+end_time: null
+entry_point_name: ''
+experiment_id: '1'
+lifecycle_stage: active
+name: ''
+run_id: 4c849b47220243e2aceea57b1cd11060
+run_uuid: 4c849b47220243e2aceea57b1cd11060
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1643745021537
+status: 1
+tags: []
+user_id: unknown
