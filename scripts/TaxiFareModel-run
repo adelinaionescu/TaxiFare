@@ -1,2 +1,49 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
+from TaxiFareModel.trainer import Trainer
+from sklearn.linear_model import LinearRegression
+from sklearn.svm import SVR
+from TaxiFareModel.encoders import TimeFeaturesEncoder,DistanceTransformer
+from TaxiFareModel.utils import compute_rmse
+from TaxiFareModel.data import get_data
+from TaxiFareModel.data import clean_data
+from sklearn.compose import ColumnTransformer
+from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn import set_config; set_config(display='diagram')
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.linear_model import LinearRegression, SGDRegressor, Ridge
+from sklearn.ensemble import GradientBoostingRegressor, AdaBoostRegressor, VotingRegressor,StackingRegressor
+from xgboost import XGBRegressor
+from sklearn.svm import SVR
+from memoized_property import memoized_property
+from sklearn.metrics import make_scorer
+import mlflow
+import joblib
+from  mlflow.tracking import MlflowClient
+
+linear = LinearRegression()
+svm = SVR()
+gboost = GradientBoostingRegressor(n_estimators=100)
+ridge = Ridge()
+svm = SVR(kernel='linear')
+adaboost = AdaBoostRegressor(base_estimator=DecisionTreeRegressor(max_depth=None))
+ensemble = VotingRegressor(
+            estimators = [("gboost", gboost),("adaboost", adaboost),("ridge", ridge), ("svm_rbf", svm)],
+            weights = [1,1,1,1], 
+            n_jobs=-1
+        )
+list_models = [linear, svm]
+for model in list_models:
+        df = get_data()
+        new_data = clean_data(df)
+        y = new_data["fare_amount"]
+        X = new_data.drop("fare_amount", axis=1)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+        trainer = Trainer(X_train, y_train)
+        trainer.set_pipeline_model(model)
+        trainer.run()
+        trainer.evaluate_model(X_test, y_test,model)
